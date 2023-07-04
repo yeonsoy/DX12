@@ -9,6 +9,8 @@
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
+WindowInfo GWindowinfo;
+
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
@@ -44,11 +46,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
 
     MSG msg;
+
+    GWindowinfo.width = 800;
+    GWindowinfo.height = 600;
+    GWindowinfo.windowed = true;
     
     // Game* game = new Game();
     // 일반 포인터로 메모리 해제를 직접해주기 보다는 스마트 포인터 활용으로 변경.
     unique_ptr<Game> game = make_unique<Game>();
-    game->Init();
+    game->Init(GWindowinfo);
 
     // 기본 메시지 루프입니다:
     // 해당 While문을 빠져나가기 전까지 내부 구문을 지속적으로 실행한다.
@@ -76,7 +82,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         // TODO: 게임 로직 추가.
-        // game->Update();
+        game->Update();
     }
 
     return (int) msg.wParam;
@@ -131,6 +137,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+
+   GWindowinfo.hwnd = hWnd;
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
