@@ -1,9 +1,5 @@
 ﻿#include "pch.h"
 #include "Engine.h"
-#include "Device.h"
-#include "CommandQueue.h"
-#include "SwapChain.h"
-#include "DescriptorHeap.h"
 
 void Engine::Init(const WindowInfo& info)
 {
@@ -19,13 +15,11 @@ void Engine::Init(const WindowInfo& info)
     _device = make_shared<Device>();
     _cmdQueue = make_shared<CommandQueue>();
     _swapChain = make_shared<SwapChain>();
-    _descHeap = make_shared<DescriptorHeap>();
 
     // 전방 선언 후 헤더를 추가하지 않으면 오류 발생. 내부 함수 구조를 알려주지 않았기 때문.
     _device->Init();
-    _cmdQueue->Init(_device->GetDevice(), _swapChain, _descHeap);
-    _swapChain->Init(info, _device->GetDXGI(), _cmdQueue->GetCmdQueue());
-    _descHeap->Init(_device->GetDevice(), _swapChain);
+    _cmdQueue->Init(_device->GetDevice(), _swapChain);
+    _swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 }
 
 void Engine::Render()

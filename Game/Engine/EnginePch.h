@@ -64,6 +64,7 @@ struct WindowInfo
 // extern unique_ptr<Engine> GEngine;
 // 아래처럼 한줄로 전방 선언과 함께 선언한다.
 
-extern unique_ptr<class Engine> GEngine;
+#define DEVICE      GEngine->GetDevice()->GetDevice()
+#define CMD_LIST    GEngine->GetCmdQueue()->GetCmdList()
 
-void HelloEngine();
+extern unique_ptr<class Engine> GEngine;
