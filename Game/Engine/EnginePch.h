@@ -57,6 +57,12 @@ struct WindowInfo
     bool    windowed;   // 창모드 or 전체화면
 };
 
+struct Vertex
+{
+    Vec3 pos;
+    Vec4 color;
+};
+
 // extern은 다른 코드는 GEngine 자체의 존재를 모르기 때문에 미리 선언해주는 개념.
 // EnginePch.h를 사용하는 모든 곳에서 사용할 수 있음.
 
@@ -64,7 +70,8 @@ struct WindowInfo
 // extern unique_ptr<Engine> GEngine;
 // 아래처럼 한줄로 전방 선언과 함께 선언한다.
 
-#define DEVICE      GEngine->GetDevice()->GetDevice()
-#define CMD_LIST    GEngine->GetCmdQueue()->GetCmdList()
+#define DEVICE          GEngine->GetDevice()->GetDevice()
+#define CMD_LIST        GEngine->GetCmdQueue()->GetCmdList()
+#define ROOT_SIGNATURE  GEngine->GetRootSignature()->GetSignature()
 
 extern unique_ptr<class Engine> GEngine;

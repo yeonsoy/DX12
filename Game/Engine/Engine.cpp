@@ -15,11 +15,13 @@ void Engine::Init(const WindowInfo& info)
     _device = make_shared<Device>();
     _cmdQueue = make_shared<CommandQueue>();
     _swapChain = make_shared<SwapChain>();
+    _rootSignature = make_shared<RootSignature>();
 
     // 전방 선언 후 헤더를 추가하지 않으면 오류 발생. 내부 함수 구조를 알려주지 않았기 때문.
     _device->Init();
     _cmdQueue->Init(_device->GetDevice(), _swapChain);
     _swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
+    _rootSignature->Init(_device->GetDevice());
 }
 
 void Engine::Render()
