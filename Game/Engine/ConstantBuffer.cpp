@@ -27,6 +27,7 @@ void ConstantBuffer::Init(uint32 size, uint32 count)
     _elementCount = count;
 
     CreateBuffer();
+    CreateView();
 }
 
 void ConstantBuffer::CreateBuffer()
@@ -52,12 +53,39 @@ void ConstantBuffer::CreateBuffer()
     // 따라서 fence를 사용하는 등의 동기화가 필요하다.
 }
 
+void ConstantBuffer::CreateView()
+{
+    D3D12_DESCRIPTOR_HEAP_DESC cbvDesc = {};
+    cbvDesc.NumDescriptors = _elementCount;
+    // Constant Buffer로 활용할 예정이므로 Flag는 None, Type은 CBV_SRV_UAV
+    cbvDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    cbvDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    DEVICE->CreateDescriptorHeap(&cbvDesc, IID_PPV_ARGS(&_cbvHeap));
+
+    // _cbvHeap을 갖고 있으면 아래의 변수들을 저장하지 않더라도 사용할 수 있다.
+    _cpuHandleBegin = _cbvHeap->GetCPUDescriptorHandleForHeapStart();
+    // GPU 사양마다 IncrementSize가 다르므로 직접 꺼내와야 한다.
+    _handleIncrementSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+    for (uint32 i = 0; i < _elementCount; ++i)
+    {
+        D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = GetCpuHandle(i);
+
+        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+        cbvDesc.BufferLocation = _cbvBuffer->GetGPUVirtualAddress() + static_cast<uint64>(_elementSize) * i;
+        cbvDesc.SizeInBytes = _elementSize;   // CB size is required to be 256-byte aligned.
+
+        // cbvHandle에 cbvDesc를 생성하도록 요청.
+        DEVICE->CreateConstantBufferView(&cbvDesc, cbvHandle);
+    }
+}
+
 void ConstantBuffer::Clear()
 {
     _currentIndex = 0;
 }
 
-void ConstantBuffer::PushData(int32 rootParamIndex, void* buffer, uint32 size)
+D3D12_CPU_DESCRIPTOR_HANDLE ConstantBuffer::PushData(int32 rootParamIndex, void* buffer, uint32 size)
 {
     // 데이터를 너무 많이 사용해서 Buffer의 크기를 벗어나는 지 확인
     assert(_currentIndex < _elementSize);
@@ -66,9 +94,14 @@ void ConstantBuffer::PushData(int32 rootParamIndex, void* buffer, uint32 size)
     ::memcpy(&_mappedBuffer[_currentIndex * _elementSize], buffer, size);
 
     // 일감 등록
-    D3D12_GPU_VIRTUAL_ADDRESS address = GetGpuVirtualAddress(_currentIndex);
-    CMD_LIST->SetGraphicsRootConstantBufferView(rootParamIndex, address);
+    // D3D12_GPU_VIRTUAL_ADDRESS address = GetGpuVirtualAddress(_currentIndex);
+    // CMD_LIST->SetGraphicsRootConstantBufferView(rootParamIndex, address);
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(_currentIndex);
+
     _currentIndex++;
+
+    // 데이터를 넣어준 Handle을 전달
+    return cpuHandle;
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGpuVirtualAddress(uint32 index)
@@ -76,4 +109,9 @@ D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGpuVirtualAddress(uint32 index)
     D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = _cbvBuffer->GetGPUVirtualAddress(); // 시작주소
     objCBAddress += index * _elementSize;
     return objCBAddress;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE ConstantBuffer::GetCpuHandle(uint32 index)
+{
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(_cpuHandleBegin, index * _handleIncrementSize);
 }

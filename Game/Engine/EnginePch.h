@@ -31,22 +31,35 @@ using namespace Microsoft::WRL;
 
 // 각종 typedef
 // 별도의 별칭을 정의한다.
-using int8      = __int8;
-using int16     = __int16;
-using int32     = __int32;
-using int64     = __int64;
-using uint8     = unsigned __int8;
-using uint16    = unsigned __int16;
-using uint32    = unsigned __int32;
-using uint64    = unsigned __int64;
-using Vec2      = XMFLOAT2;
-using Vec3      = XMFLOAT3;
-using Vec4      = XMFLOAT4;
-using Matrix    = XMMATRIX;
+using int8 = __int8;
+using int16 = __int16;
+using int32 = __int32;
+using int64 = __int64;
+using uint8 = unsigned __int8;
+using uint16 = unsigned __int16;
+using uint32 = unsigned __int32;
+using uint64 = unsigned __int64;
+using Vec2 = XMFLOAT2;
+using Vec3 = XMFLOAT3;
+using Vec4 = XMFLOAT4;
+using Matrix = XMMATRIX;
+
+enum class CBV_REGISTER
+{
+    b0,
+    b1,
+    b2,
+    b3,
+    b4,
+
+    END
+};
 
 enum
 {
-    SWAP_CHAIN_BUFFER_COUNT = 2
+    SWAP_CHAIN_BUFFER_COUNT = 2,
+    CBV_REGISTER_COUNT = CBV_REGISTER::END,
+    REGISTER_COUNT = CBV_REGISTER::END // 총 Register 개수
 };
 
 struct WindowInfo

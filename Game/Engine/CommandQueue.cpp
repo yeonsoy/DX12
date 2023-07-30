@@ -80,6 +80,12 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
     // Root Signature를 사용하도록 전달.
     _cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
     GEngine->GetCB()->Clear();
+    GEngine->GetTableDescHeap()->Clear();
+
+    ID3D12DescriptorHeap* descHeap = GEngine->GetTableDescHeap()->GetDescriptorHeap().Get();
+    // SetDescriptorHeaps은 자주 사용하면 비효율적이므로 매 프레임마다 1번씩만 호출되도록 한다.
+    // 해당 함수를 누락하게 되면 SetGraphicsRootDescriptorTable에서 크래시가 발생한다.
+    _cmdList->SetDescriptorHeaps(1, &descHeap);
 
     // 실행 예약.
     _cmdList->ResourceBarrier(1, &barrier);

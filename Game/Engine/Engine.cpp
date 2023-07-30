@@ -17,6 +17,7 @@ void Engine::Init(const WindowInfo& info)
     _swapChain = make_shared<SwapChain>();
     _rootSignature = make_shared<RootSignature>();
     _cb = make_shared<ConstantBuffer>();
+    _tableDescHeap = make_shared<TableDescriptorHeap>();
 
     // 전방 선언 후 헤더를 추가하지 않으면 오류 발생. 내부 함수 구조를 알려주지 않았기 때문.
     _device->Init();
@@ -25,6 +26,7 @@ void Engine::Init(const WindowInfo& info)
     _rootSignature->Init(_device->GetDevice());
     _cb->Init(sizeof(Transform), 256); // Transform 정보를 넘겨주는 경우가 많다.
     // drawCall이 너무 늘어나는 경우는 비효율적이므로 주의하는 것이 좋다.
+    _tableDescHeap->Init(256);
 }
 
 void Engine::Render()
