@@ -33,6 +33,10 @@ void CommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapC
     // Open 상태에서 Command를 넣다가 Close한 다음 제출하는 개념
     _cmdList->Close();
 
+    // Resource Load 용 CommandList 생성
+    device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_resCmdAlloc));
+    device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _resCmdAlloc.Get(), nullptr, IID_PPV_ARGS(&_resCmdList));
+
     // CreateFence
     // - CPU와 GPU의 동기화 수단으로 쓰인다
     device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
@@ -123,4 +127,18 @@ void CommandQueue::RenderEnd()
     WaitSync();
 
     _swapChain->SwapIndex();
+}
+
+void CommandQueue::FlushResourceCommandQueue()
+{
+    _resCmdList->Close();
+
+    ID3D12CommandList* cmdListArr[] = { _resCmdList.Get() };
+    _cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+
+    WaitSync();
+
+    // 재사용 준비
+    _resCmdAlloc->Reset();
+    _resCmdList->Reset(_resCmdAlloc.Get(), nullptr);
 }

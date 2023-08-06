@@ -9,13 +9,18 @@
 class RootSignature
 {
 public:
-    void Init(ComPtr<ID3D12Device> device);
+    void Init();
 
     ComPtr<ID3D12RootSignature>	GetSignature() { return _signature; }
+
+private:
+    void CreateSamplerDesc();
+    void CreateRootSignature();
 
 private:
     ComPtr<ID3D12RootSignature>	_signature;
     // ComPtr로 되어있는 거의 대부분의 모든 부분들은 GPU에게 요청을 하는 것이다.
     // 내부에서 실질적으로 객체가 만들어진다.
+    D3D12_STATIC_SAMPLER_DESC _samplerDesc;
 };
 

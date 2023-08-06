@@ -14,8 +14,11 @@ public:
     void RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect);
     void RenderEnd();
 
+    void FlushResourceCommandQueue();
+
     ComPtr<ID3D12CommandQueue> GetCmdQueue() { return _cmdQueue; }
     ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return _cmdList; }
+    ComPtr<ID3D12GraphicsCommandList> GetResourceCmdList() { return	_resCmdList; }
 
 private:
     // CommandQueue : DX12에 등장
@@ -26,6 +29,9 @@ private:
     ComPtr<ID3D12CommandQueue>          _cmdQueue;
     ComPtr<ID3D12CommandAllocator>      _cmdAlloc;
     ComPtr<ID3D12GraphicsCommandList>   _cmdList;
+
+    ComPtr<ID3D12CommandAllocator>      _resCmdAlloc;
+    ComPtr<ID3D12GraphicsCommandList>   _resCmdList;
 
     // Fence : 울타리(?)
     // 상대방이 작업이 끝날 때까지 기다리겠다는 의미

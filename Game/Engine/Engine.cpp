@@ -23,7 +23,7 @@ void Engine::Init(const WindowInfo& info)
     _device->Init();
     _cmdQueue->Init(_device->GetDevice(), _swapChain);
     _swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
-    _rootSignature->Init(_device->GetDevice());
+    _rootSignature->Init();
     _cb->Init(sizeof(Transform), 256); // Transform 정보를 넘겨주는 경우가 많다.
     // drawCall이 너무 늘어나는 경우는 비효율적이므로 주의하는 것이 좋다.
     _tableDescHeap->Init(256);
