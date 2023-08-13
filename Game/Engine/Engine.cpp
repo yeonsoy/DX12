@@ -4,7 +4,6 @@
 void Engine::Init(const WindowInfo& info)
 {
     _window = info;
-    ResizeWindow(info.width, info.height);
 
     // 그려질 화면 크기를 설정
     _viewport = { 0, 0, static_cast<FLOAT>(info.width), static_cast<FLOAT>(info.height), 0.0f, 1.0f };
@@ -18,6 +17,7 @@ void Engine::Init(const WindowInfo& info)
     _rootSignature = make_shared<RootSignature>();
     _cb = make_shared<ConstantBuffer>();
     _tableDescHeap = make_shared<TableDescriptorHeap>();
+    _depthStencilBuffer = make_shared<DepthStencilBuffer>();
 
     // 전방 선언 후 헤더를 추가하지 않으면 오류 발생. 내부 함수 구조를 알려주지 않았기 때문.
     _device->Init();
@@ -27,6 +27,10 @@ void Engine::Init(const WindowInfo& info)
     _cb->Init(sizeof(Transform), 256); // Transform 정보를 넘겨주는 경우가 많다.
     // drawCall이 너무 늘어나는 경우는 비효율적이므로 주의하는 것이 좋다.
     _tableDescHeap->Init(256);
+    _depthStencilBuffer->Init(_window);
+
+    // 대부분의 객체를 전역으로 사용하다보니 Device가 만들어지지 않은 상태로 호출이 되지 않도록 순서를 모든 것을 init한 이후로 호출하도록 변경한다.
+    ResizeWindow(info.width, info.height);
 }
 
 void Engine::Render()
@@ -60,4 +64,6 @@ void Engine::ResizeWindow(int32 width, int32 height)
 
     // window handle을 사용해서 100, 100 위치에 width, height로 변경해라.
     ::SetWindowPos(_window.hwnd, 0, 100, 100, width, height, 0);
+
+    _depthStencilBuffer->Init(_window);
 }

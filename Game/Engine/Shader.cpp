@@ -21,13 +21,15 @@ void Shader::Init(const wstring& path)
 
     _pipelineDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     _pipelineDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-    _pipelineDesc.DepthStencilState.DepthEnable = FALSE;
-    _pipelineDesc.DepthStencilState.StencilEnable = FALSE;
+    // 기본 규칙(DEFAULT) : 가까이 있는 물체가 그려진다
+    _pipelineDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
     _pipelineDesc.SampleMask = UINT_MAX;
     _pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     _pipelineDesc.NumRenderTargets = 1;
     _pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     _pipelineDesc.SampleDesc.Count = 1;
+    // DXGI_FORMAT_D32_FLOAT
+    _pipelineDesc.DSVFormat = GEngine->GetDepthStencilBuffer()->GetDSVFormat();
 
     DEVICE->CreateGraphicsPipelineState(&_pipelineDesc, IID_PPV_ARGS(&_pipelineState));
 }

@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Game.h"
 #include "Engine.h"
 
@@ -11,7 +11,7 @@ void Game::Init(const WindowInfo& info)
     GEngine->Init(info);
 
     vector<Vertex> vec(4);
-    vec[0].pos = Vec3(-0.5f, 0.5f, 0.5f);
+    vec[0].pos = Vec3(-0.5f, 0.5f, 0.5f); // Vec3ì˜ 3ë²ˆì§¸(Z) ê°’ì´ 1ì„ ë„˜ëŠ”ë‹¤ë©´ ê·¸ë ¤ì§€ì§€ ì•ŠëŠ”ë‹¤.
     vec[0].color = Vec4(1.f, 0.f, 0.f, 1.f);
     vec[0].uv = Vec2(0.f, 0.f);
     vec[1].pos = Vec3(0.5f, 0.5f, 0.5f);
@@ -36,7 +36,7 @@ void Game::Init(const WindowInfo& info)
         indexVec.push_back(3);
     }
 
-    mesh->Init(vec, indexVec); // µ¿ÀÏ ¸ð¾çÀÇ Mesh´Â ÇÑ ¹ø¸¸ ¸¸µé¾î¼­ ÀçÈ°¿ëÇÑ´Ù.
+    mesh->Init(vec, indexVec); // ë™ì¼ ëª¨ì–‘ì˜ MeshëŠ” í•œ ë²ˆë§Œ ë§Œë“¤ì–´ì„œ ìž¬í™œìš©í•œë‹¤.
 
     shader->Init(L"..\\Resources\\Shader\\default.hlsli");
 
@@ -53,7 +53,17 @@ void Game::Update()
 
     {
         Transform t;
-        t.offset = Vec4(0.f, 0.f, 0.f, 0.f);
+        t.offset = Vec4(0.25f, 0.25f, 0.2f, 0.f);
+        mesh->SetTransform(t);
+
+        mesh->SetTexture(texture);
+
+        mesh->Render();
+    }
+
+    {
+        Transform t;
+        t.offset = Vec4(0.f, 0.f, 0.3f, 0.f);
         mesh->SetTransform(t);
 
         mesh->SetTexture(texture);
