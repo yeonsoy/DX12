@@ -11,14 +11,6 @@ void Engine::Init(const WindowInfo& info)
     // CD가 붙어있는 Class의 경우에는 d3dx12.h에 포함된 HelperClass
     _scissorRect = CD3DX12_RECT(0, 0, info.width, info.height);
 
-    _device = make_shared<Device>();
-    _cmdQueue = make_shared<CommandQueue>();
-    _swapChain = make_shared<SwapChain>();
-    _rootSignature = make_shared<RootSignature>();
-    _cb = make_shared<ConstantBuffer>();
-    _tableDescHeap = make_shared<TableDescriptorHeap>();
-    _depthStencilBuffer = make_shared<DepthStencilBuffer>();
-
     // 전방 선언 후 헤더를 추가하지 않으면 오류 발생. 내부 함수 구조를 알려주지 않았기 때문.
     _device->Init();
     _cmdQueue->Init(_device->GetDevice(), _swapChain);
@@ -28,6 +20,9 @@ void Engine::Init(const WindowInfo& info)
     // drawCall이 너무 늘어나는 경우는 비효율적이므로 주의하는 것이 좋다.
     _tableDescHeap->Init(256);
     _depthStencilBuffer->Init(_window);
+
+    _input->Init(info.hwnd);
+    _timer->Init();
 
     // 대부분의 객체를 전역으로 사용하다보니 Device가 만들어지지 않은 상태로 호출이 되지 않도록 순서를 모든 것을 init한 이후로 호출하도록 변경한다.
     ResizeWindow(info.width, info.height);
@@ -40,6 +35,14 @@ void Engine::Render()
     // TODO : 나머지 물체들 그려준다
 
     RenderEnd();
+}
+
+void Engine::Update()
+{
+    _input->Update();
+    _timer->Update();
+
+    ShowFps();
 }
 
 void Engine::RenderBegin()
@@ -66,4 +69,15 @@ void Engine::ResizeWindow(int32 width, int32 height)
     ::SetWindowPos(_window.hwnd, 0, 100, 100, width, height, 0);
 
     _depthStencilBuffer->Init(_window);
+}
+
+void Engine::ShowFps()
+{
+    uint32 fps = _timer->GetFps();
+
+    WCHAR text[100] = L"";
+    ::wsprintf(text, L"FPS : %d", fps);
+
+    // 창에 FPS 출력
+    ::SetWindowText(_window.hwnd, text);
 }
