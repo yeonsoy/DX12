@@ -27,7 +27,7 @@ enum class KEY_STATE
 
 enum
 {
-	KEY_TYPE_COUNT = static_cast<int32>(UINT8_MAX), // 번호를 임의로 매핑하고 있으므로 1Byte를 전체 사용하도록 설정.
+	KEY_TYPE_COUNT = static_cast<int32>(UINT8_MAX + 1), // 번호를 임의로 매핑하고 있으므로 1Byte를 전체 사용하도록 설정.
 	KEY_STATE_COUNT = static_cast<int32>(KEY_STATE::END),
 };
 

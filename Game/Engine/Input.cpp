@@ -19,10 +19,16 @@ void Input::Update()
         return;
     }
 
+    BYTE asciiKeys[KEY_TYPE_COUNT] = {};
+    // 256개의 BYTE Array를 받아서 각 Virtual Key의 State를 받아온다.
+    // high-order byte가 1이면(=1000 0000) Key가 눌린 상태이다.
+    if (::GetKeyboardState(asciiKeys) == false)
+        return;
+
     for (uint32 key = 0; key < KEY_TYPE_COUNT; key++)
     {
         // 키가 눌려 있으면 true
-        if (::GetAsyncKeyState(key) & 0x8000)
+        if (asciiKeys[key] & 0x80)
         {
             KEY_STATE& state = _states[key];
 
