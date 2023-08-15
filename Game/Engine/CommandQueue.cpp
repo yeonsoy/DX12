@@ -83,7 +83,10 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 
     // Root Signature를 사용하도록 전달.
     _cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
-    GEngine->GetCB()->Clear();
+  
+    GEngine->GetConstantBuffer(CONSTANT_BUFFER_TYPE::TRANSFORM)->Clear();
+    GEngine->GetConstantBuffer(CONSTANT_BUFFER_TYPE::MATERIAL)->Clear();
+
     GEngine->GetTableDescHeap()->Clear();
 
     ID3D12DescriptorHeap* descHeap = GEngine->GetTableDescHeap()->GetDescriptorHeap().Get();

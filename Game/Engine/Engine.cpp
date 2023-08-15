@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Engine.h"
+#include "Material.h"
 
 void Engine::Init(const WindowInfo& info)
 {
@@ -16,13 +17,15 @@ void Engine::Init(const WindowInfo& info)
     _cmdQueue->Init(_device->GetDevice(), _swapChain);
     _swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
     _rootSignature->Init();
-    _cb->Init(sizeof(Transform), 256); // Transform 정보를 넘겨주는 경우가 많다.
     // drawCall이 너무 늘어나는 경우는 비효율적이므로 주의하는 것이 좋다.
     _tableDescHeap->Init(256);
     _depthStencilBuffer->Init(_window);
 
     _input->Init(info.hwnd);
     _timer->Init();
+
+    CreateConstantBuffer(CBV_REGISTER::b0, sizeof(Transform), 256); // Transform 정보를 넘겨주는 경우가 많다.
+    CreateConstantBuffer(CBV_REGISTER::b1, sizeof(MaterialParams), 256);
 
     // 대부분의 객체를 전역으로 사용하다보니 Device가 만들어지지 않은 상태로 호출이 되지 않도록 순서를 모든 것을 init한 이후로 호출하도록 변경한다.
     ResizeWindow(info.width, info.height);
@@ -80,4 +83,14 @@ void Engine::ShowFps()
 
     // 창에 FPS 출력
     ::SetWindowText(_window.hwnd, text);
+}
+
+void Engine::CreateConstantBuffer(CBV_REGISTER reg, uint32 bufferSize, uint32 count)
+{
+    uint8 typeInt = static_cast<uint8>(reg);
+    assert(_constantBuffers.size() == typeInt);
+
+    shared_ptr<ConstantBuffer> buffer = make_shared<ConstantBuffer>();
+    buffer->Init(reg, bufferSize, count);
+    _constantBuffers.push_back(buffer);
 }
