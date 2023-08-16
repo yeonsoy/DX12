@@ -105,11 +105,6 @@ struct Vertex
     Vec2 uv;
 };
 
-struct Transform
-{
-    Vec4 offset;
-};
-
 // extern은 다른 코드는 GEngine 자체의 존재를 모르기 때문에 미리 선언해주는 개념.
 // EnginePch.h를 사용하는 모든 곳에서 사용할 수 있음.
 

@@ -84,10 +84,6 @@ void Mesh::Render()
 
     // < Table로 전달 시 >
     // 2) TableDescHeap에다가 CBV 전달
-    CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushData(&_transform, sizeof(_transform));
-    
-    _mat->Update();
-
     // 3) 모두 세팅이 끝났으면 TableDescHeap 커밋
     GEngine->GetTableDescHeap()->CommitTable();
 

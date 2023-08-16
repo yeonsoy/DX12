@@ -22,6 +22,7 @@ public:
 
 public:
     void Update();
+    void LateUpdate();
 
 public:
     // Rendering 연관
