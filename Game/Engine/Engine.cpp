@@ -2,6 +2,9 @@
 #include "Engine.h"
 #include "Material.h"
 #include "Transform.h"
+#include "Input.h"
+#include "Timer.h"
+#include "SceneManager.h"
 
 void Engine::Init(const WindowInfo& info)
 {
@@ -22,41 +25,39 @@ void Engine::Init(const WindowInfo& info)
     _tableDescHeap->Init(256);
     _depthStencilBuffer->Init(_window);
 
-    _input->Init(info.hwnd);
-    _timer->Init();
-
     CreateConstantBuffer(CBV_REGISTER::b0, sizeof(TransformMatrix), 256); // Transform 정보를 넘겨주는 경우가 많다.
     CreateConstantBuffer(CBV_REGISTER::b1, sizeof(MaterialParams), 256);
 
     // 대부분의 객체를 전역으로 사용하다보니 Device가 만들어지지 않은 상태로 호출이 되지 않도록 순서를 모든 것을 init한 이후로 호출하도록 변경한다.
     ResizeWindow(info.width, info.height);
+
+    GET_SINGLE(Input)->Init(info.hwnd);
+    GET_SINGLE(Timer)->Init();
+}
+
+void Engine::Update()
+{
+    GET_SINGLE(Input)->Update();
+    GET_SINGLE(Timer)->Update();
+
+    Render();
+
+    ShowFps();
+}
+
+void Engine::RenderBegin()
+{
+    _cmdQueue->RenderBegin(&_viewport, &_scissorRect);
 }
 
 void Engine::Render()
 {
     RenderBegin();
 
-    // TODO : 나머지 물체들 그려준다
+    // Begin과 End 사이에 Update가 들어가지 않으면 Render가 되지 않는다.
+    GET_SINGLE(SceneManager)->Update();
 
     RenderEnd();
-}
-
-void Engine::Update()
-{
-    _input->Update();
-    _timer->Update();
-
-    ShowFps();
-}
-
-void Engine::LateUpdate()
-{
-    // TODO
-}
-
-void Engine::RenderBegin()
-{
-    _cmdQueue->RenderBegin(&_viewport, &_scissorRect);
 }
 
 void Engine::RenderEnd()
@@ -82,7 +83,7 @@ void Engine::ResizeWindow(int32 width, int32 height)
 
 void Engine::ShowFps()
 {
-    uint32 fps = _timer->GetFps();
+    uint32 fps = GET_SINGLE(Timer)->GetFps();
 
     WCHAR text[100] = L"";
     ::wsprintf(text, L"FPS : %d", fps);

@@ -105,6 +105,25 @@ struct Vertex
     Vec2 uv;
 };
 
+// type: Class Type
+// private에 생성자를 넣어서 외부에서 생성하려고 하면 보호 수준 문제로 생성 불가.
+// GetInstance 함수는 내부의 변수의 주소를 반환하는데 stack memory의 주소를 반환하는 위험성이 있지 않을까?
+// static 키워드를 붙이는 경우 stack이 아닌 data 영역 (정적/전역) 쪽에 올라가므로 문제가 없다.
+
+#define DECLARE_SINGLE(type)		\
+private:							\
+	type() {}						\
+	~type() {}						\
+public:								\
+	static type* GetInstance()		\
+	{								\
+		static type instance;		\
+		return &instance;			\
+	}								\
+
+
+#define GET_SINGLE(type)	type::GetInstance()
+
 // extern은 다른 코드는 GEngine 자체의 존재를 모르기 때문에 미리 선언해주는 개념.
 // EnginePch.h를 사용하는 모든 곳에서 사용할 수 있음.
 
@@ -117,8 +136,8 @@ struct Vertex
 #define RESOURCE_CMD_LIST   GEngine->GetCmdQueue()->GetResourceCmdList()
 #define ROOT_SIGNATURE      GEngine->GetRootSignature()->GetSignature()
 
-#define INPUT               GEngine->GetInput()
-#define DELTA_TIME          GEngine->GetTimer()->GetDeltaTime()
+#define INPUT               GET_SINGLE(Input)
+#define DELTA_TIME          GET_SINGLE(Timer)->GetDeltaTime()
 
 #define CONST_BUFFER(type)  GEngine->GetConstantBuffer(type)
 
