@@ -25,7 +25,7 @@ void Engine::Init(const WindowInfo& info)
     _tableDescHeap->Init(256);
     _depthStencilBuffer->Init(_window);
 
-    CreateConstantBuffer(CBV_REGISTER::b0, sizeof(TransformMatrix), 256); // Transform 정보를 넘겨주는 경우가 많다.
+    CreateConstantBuffer(CBV_REGISTER::b0, sizeof(TransformParams), 256); // Transform 정보를 넘겨주는 경우가 많다.
     CreateConstantBuffer(CBV_REGISTER::b1, sizeof(MaterialParams), 256);
 
     // 대부분의 객체를 전역으로 사용하다보니 Device가 만들어지지 않은 상태로 호출이 되지 않도록 순서를 모든 것을 init한 이후로 호출하도록 변경한다.
@@ -39,6 +39,7 @@ void Engine::Update()
 {
     GET_SINGLE(Input)->Update();
     GET_SINGLE(Timer)->Update();
+    GET_SINGLE(SceneManager)->Update();
 
     Render();
 
@@ -54,8 +55,7 @@ void Engine::Render()
 {
     RenderBegin();
 
-    // Begin과 End 사이에 Update가 들어가지 않으면 Render가 되지 않는다.
-    GET_SINGLE(SceneManager)->Update();
+    GET_SINGLE(SceneManager)->Render();
 
     RenderEnd();
 }

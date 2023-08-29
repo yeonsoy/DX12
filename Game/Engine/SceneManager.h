@@ -10,6 +10,7 @@ class SceneManager
 
 public:
 	void Update();
+	void Render();
 	void LoadScene(wstring sceneName);
 
 public:

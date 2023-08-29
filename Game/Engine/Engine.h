@@ -18,6 +18,8 @@ public:
     void Update();
 
 public:
+    const WindowInfo& GetWindow() { return _window; }
+
     // Rendering 연관
     shared_ptr<Device> GetDevice() { return _device; }
     shared_ptr<CommandQueue> GetCmdQueue() { return _cmdQueue; }

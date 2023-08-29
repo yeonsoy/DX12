@@ -1,7 +1,9 @@
 
-cbuffer TEST_B0 : register(b0)
+cbuffer TRANSFORM_PARAMS : register(b0)
 {
-    float4 offset0;
+    // DX에서의 행렬 접근 순서(row)와 shader의 행렬 접근 순서(column)가 다르다.
+    // DX에서의 행렬 접근 순서와 맞춰주기 위해서 row_major 키워드를 사용한다.
+    row_major matrix matWVP;
 };
 
 cbuffer MATERIAL_PARAMS : register(b1)
@@ -45,12 +47,10 @@ VS_OUT VS_Main(VS_IN input)
 {
     VS_OUT output = (VS_OUT)0;
 
-    output.pos = float4(input.pos, 1.f);
-    // output.pos += offset0;
-    output.pos.x += float_0;
-    output.pos.y += float_1;
-    output.pos.z += float_2;
-
+    // 어떤 정점이건 WVP 행렬 적용.
+    // float4에 1.f를 넣어주는 것은 좌표의 개념을 만들기 위해서이고,
+    // 방향성만 추출하고 싶다면 0.f로 확장한다.
+    output.pos = mul(float4(input.pos, 1.f), matWVP);
     output.color = input.color;
     output.uv = input.uv;
 
