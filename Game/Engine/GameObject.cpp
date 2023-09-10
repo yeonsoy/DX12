@@ -2,10 +2,10 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
-#include "MonoBehaviour.h"
 #include "Camera.h"
+#include "MonoBehaviour.h"
 
-GameObject::GameObject()
+GameObject::GameObject() : Object(OBJECT_TYPE::GAMEOBJECT)
 {
 
 }
