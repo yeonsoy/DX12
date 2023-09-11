@@ -155,6 +155,10 @@ public:								\
 
 struct TransformParams
 {
+    Matrix matWorld;
+    Matrix matView;
+    Matrix matProjection;
+    Matrix matWV;
     Matrix matWVP;
 };
 

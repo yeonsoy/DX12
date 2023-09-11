@@ -103,7 +103,7 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 
     // Specify the buffers we are going to render to.
     D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = _swapChain->GetBackRTV();
-    _cmdList->ClearRenderTargetView(backBufferView, Colors::LightSteelBlue, 0, nullptr);
+    _cmdList->ClearRenderTargetView(backBufferView, Colors::Black, 0, nullptr);
 
     // Depth Stencil 초기화.
     D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = GEngine->GetDepthStencilBuffer()->GetDSVCpuHandle();

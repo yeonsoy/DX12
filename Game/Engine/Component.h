@@ -6,6 +6,7 @@ enum class COMPONENT_TYPE : uint8
     TRANSFORM,
     MESH_RENDERER,
     CAMERA,
+    LIGHT,
     // ...
     MONO_BEHAVIOUR, // 반드시 마지막이어야 한다.
     END,
