@@ -9,6 +9,7 @@ struct VS_IN
     float3 pos : POSITION;
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
+    float3 tangent : TANGENT;
 };
 
 struct VS_OUT
@@ -17,6 +18,8 @@ struct VS_OUT
     float2 uv : TEXCOORD;
     float3 viewPos : POSITION;
     float3 viewNormal : NORMAL;
+    float3 viewTangent : TANGENT;
+    float3 viewBinormal : BINORMAL;
 };
 
 // 정점 변화를 정의하는 단계
@@ -33,6 +36,9 @@ VS_OUT VS_Main(VS_IN input)
     output.viewPos = mul(float4(input.pos, 1.f), g_matWV).xyz;
     // 방향 벡터는 마지막을 0으로 지정해줘야 translation이 적용되지 않는다.
     output.viewNormal = normalize(mul(float4(input.normal, 0.f), g_matWV).xyz);
+    output.viewTangent = normalize(mul(float4(input.tangent, 0.f), g_matWV).xyz);
+    // 오른손 좌표계인지, 왼손 좌표계인지에 따라서 외적 방향이 달라진다.
+    output.viewBinormal = normalize(cross(output.viewTangent, output.viewNormal));
 
     return output;
 }
@@ -42,13 +48,28 @@ float4 PS_Main(VS_OUT input) : SV_Target
 {
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
 
+    if (g_tex_on_0)
+        color = g_tex_0.Sample(g_sam_0, input.uv);
+
+    float3 viewNormal =input.viewNormal;
+
+    if (g_tex_on_1 == 0)
+    {
+        // [0,255] 범위에서 [0,1]로 변환
+        float3 tangentSpaceNormal = g_tex_1.Sample(g_sam_0, input.uv).xyz;
+        // [0,1] 범위에서 [-1,1]로 변환
+        tangentSpaceNormal = (tangentSpaceNormal - 0.5f) * 2.f;
+        float3x3 matTBN = { input.viewTangent, input.viewBinormal, input.viewNormal };
+        viewNormal = normalize(mul(tangentSpaceNormal, matTBN));
+    }
+
     LightColor totalColor = (LightColor)0.f;
 
     // 모든 Light를 순회하면서 Color를 계산한다.
     for (int i = 0; i < g_lightCount; ++i)
     {
         // 몇 번째 광원인지
-        LightColor color = CalculateLightColor(i, input.viewNormal, input.viewPos);
+        LightColor color = CalculateLightColor(i, viewNormal, input.viewPos);
         totalColor.diffuse += color.diffuse;
         totalColor.ambient += color.ambient;
         totalColor.specular += color.specular;
