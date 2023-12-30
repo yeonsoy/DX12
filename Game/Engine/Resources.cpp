@@ -14,6 +14,10 @@ shared_ptr<Mesh> Resources::LoadCubeMesh()
 
     vector<Vertex> vec(24);
 
+    // 1 2
+    // 0 3
+    // 시계 방향으로 세팅
+
     // 앞면
     vec[0] = Vertex(Vec3(-w2, -h2, -d2), Vec2(0.0f, 1.0f), Vec3(0.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f));
     vec[1] = Vertex(Vec3(-w2, +h2, -d2), Vec2(0.0f, 0.0f), Vec3(0.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f));

@@ -12,7 +12,7 @@ Shader::~Shader()
 
 }
 
-void Shader::Init(const wstring& path)
+void Shader::Init(const wstring& path, ShaderInfo info)
 {
     // VertexShader, PixelShader를 특정 경로에서 로드
     CreateVertexShader(path, "VS_Main", "vs_5_0");
@@ -41,6 +41,46 @@ void Shader::Init(const wstring& path)
     _pipelineDesc.SampleDesc.Count = 1;
     // DXGI_FORMAT_D32_FLOAT
     _pipelineDesc.DSVFormat = GEngine->GetDepthStencilBuffer()->GetDSVFormat();
+
+    switch (info.rasterizerType)
+    {
+    case RASTERIZER_TYPE::CULL_BACK:
+        _pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+        _pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+        break;
+    case RASTERIZER_TYPE::CULL_FRONT:
+        _pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+        _pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_FRONT;
+        break;
+    case RASTERIZER_TYPE::CULL_NONE:
+        _pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+        _pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+        break;
+    case RASTERIZER_TYPE::WIREFRAME:
+        _pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+        _pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+        break;
+    }
+
+    switch (info.depthStencilType)
+    {
+    case DEPTH_STENCIL_TYPE::LESS:
+        _pipelineDesc.DepthStencilState.DepthEnable = TRUE;
+        _pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+        break;
+    case DEPTH_STENCIL_TYPE::LESS_EQUAL:
+        _pipelineDesc.DepthStencilState.DepthEnable = TRUE;
+        _pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+        break;
+    case DEPTH_STENCIL_TYPE::GREATER:
+        _pipelineDesc.DepthStencilState.DepthEnable = TRUE;
+        _pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER;
+        break;
+    case DEPTH_STENCIL_TYPE::GREATER_EQUAL:
+        _pipelineDesc.DepthStencilState.DepthEnable = TRUE;
+        _pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+        break;
+    }
 
     DEVICE->CreateGraphicsPipelineState(&_pipelineDesc, IID_PPV_ARGS(&_pipelineState));
 }
