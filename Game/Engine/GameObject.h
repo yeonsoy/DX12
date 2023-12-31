@@ -30,8 +30,13 @@ public:
 
     void AddComponent(shared_ptr<Component> component);
 
+    void SetCheckFrustum(bool checkFrustum) { _checkFrustum = checkFrustum; }
+    bool GetCheckFrustum() { return _checkFrustum; }
+
 private:
     array<shared_ptr<Component>, FIXED_COMPONENT_COUNT> _components;
     // Script들은 개수가 명확하지 않으므로 따로 관리
     vector<shared_ptr<MonoBehaviour>> _scripts;
+
+    bool _checkFrustum = true;
 };

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Component.h"
+#include "Frustum.h"
 
 enum class PROJECTION_TYPE
 {
@@ -28,6 +29,8 @@ private:
     // 카메라가 여러 개 생길 수 있으므로 각기 정보를 갖고 있는다.
     Matrix _matView = {};
     Matrix _matProjection = {};
+
+    Frustum _frustum;
 
 public:
     // TEMP
