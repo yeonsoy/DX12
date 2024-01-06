@@ -28,6 +28,10 @@ public:
             _cullingMask &= ~(1 << layer);
     }
 
+    void SortGameObject();
+    void Render_Deferred();
+    void Render_Forward();
+
     // 모든 대상을 컬링 (아무 것도 찍지 않는다)
     void SetCullingMaskAll() { SetCullingMask(UINT32_MAX); }
     void SetCullingMask(uint32 mask) { _cullingMask = mask; }
@@ -50,6 +54,10 @@ private:
     // 특정 UI만 보여주고 싶으면 사용
     // 1인 경우 컬링 대상.
     uint32 _cullingMask = 0; // 32bit로 컬링 여부 표현
+
+private:
+    vector<shared_ptr<GameObject>>	_vecDeferred;
+    vector<shared_ptr<GameObject>>	_vecForward;
 
 public:
     // TEMP

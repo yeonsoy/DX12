@@ -69,7 +69,7 @@ void ConstantBuffer::CreateView()
 
     for (uint32 i = 0; i < _elementCount; ++i)
     {
-        D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = GetCpuHandle(i);
+        D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = GetSRVHandle(i);
 
         D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
         cbvDesc.BufferLocation = _cbvBuffer->GetGPUVirtualAddress() + static_cast<uint64>(_elementSize) * i;
@@ -97,7 +97,7 @@ void ConstantBuffer::PushData(void* buffer, uint32 size)
     // 일감 등록
     // D3D12_GPU_VIRTUAL_ADDRESS address = GetGpuVirtualAddress(_currentIndex);
     // CMD_LIST->SetGraphicsRootConstantBufferView(rootParamIndex, address);
-    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(_currentIndex); // 데이터를 넣어준 Handle을 전달
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetSRVHandle(_currentIndex); // 데이터를 넣어준 Handle을 전달
     GEngine->GetTableDescHeap()->SetCBV(cpuHandle, _reg);
     _currentIndex++;
 }
@@ -116,7 +116,7 @@ D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGpuVirtualAddress(uint32 index)
     return objCBAddress;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE ConstantBuffer::GetCpuHandle(uint32 index)
+D3D12_CPU_DESCRIPTOR_HANDLE ConstantBuffer::GetSRVHandle(uint32 index)
 {
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(_cpuHandleBegin, index * _handleIncrementSize);
 }

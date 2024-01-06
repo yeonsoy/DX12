@@ -25,7 +25,7 @@ void TableDescriptorHeap::Clear()
 
 void TableDescriptorHeap::SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, CBV_REGISTER reg)
 {
-    D3D12_CPU_DESCRIPTOR_HANDLE destHandle = GetCPUHandle(reg);
+    D3D12_CPU_DESCRIPTOR_HANDLE destHandle = GetSRVHandle(reg);
 
     uint32 destRange = 1;
     uint32 srcRange = 1;
@@ -34,7 +34,7 @@ void TableDescriptorHeap::SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, CBV_REGI
 
 void TableDescriptorHeap::SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, SRV_REGISTER reg)
 {
-    D3D12_CPU_DESCRIPTOR_HANDLE destHandle = GetCPUHandle(reg);
+    D3D12_CPU_DESCRIPTOR_HANDLE destHandle = GetSRVHandle(reg);
 
     uint32 destRange = 1;
     uint32 srcRange = 1;
@@ -51,17 +51,17 @@ void TableDescriptorHeap::CommitTable()
     _currentGroupIndex++; // Register로 데이터를 보낸 후 다음 Table을 가리키도록 이동시킨다.
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(CBV_REGISTER reg)
+D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetSRVHandle(CBV_REGISTER reg)
 {
-    return GetCPUHandle(static_cast<uint32>(reg));
+    return GetSRVHandle(static_cast<uint32>(reg));
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(SRV_REGISTER reg)
+D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetSRVHandle(SRV_REGISTER reg)
 {
-    return GetCPUHandle(static_cast<uint8>(reg));
+    return GetSRVHandle(static_cast<uint8>(reg));
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(uint32 reg)
+D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetSRVHandle(uint32 reg)
 {
     assert(reg > 0);
     D3D12_CPU_DESCRIPTOR_HANDLE handle = _descHeap->GetCPUDescriptorHandleForHeapStart();
