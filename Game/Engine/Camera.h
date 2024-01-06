@@ -17,6 +17,22 @@ public:
     virtual void FinalUpdate() override;
     void Render();
 
+    void SetProjectionType(PROJECTION_TYPE type) { _type = type; }
+    PROJECTION_TYPE GetProjectionType() { return _type; }
+
+    void SetCullingMaskLayerOnOff(uint8 layer, bool on)
+    {
+        if (on)
+            _cullingMask |= (1 << layer);
+        else
+            _cullingMask &= ~(1 << layer);
+    }
+
+    // 모든 대상을 컬링 (아무 것도 찍지 않는다)
+    void SetCullingMaskAll() { SetCullingMask(UINT32_MAX); }
+    void SetCullingMask(uint32 mask) { _cullingMask = mask; }
+    bool IsCulled(uint8 layer) { return (_cullingMask & (1 << layer)) != 0; }
+
 private:
     PROJECTION_TYPE _type = PROJECTION_TYPE::PERSPECTIVE;
 
@@ -31,6 +47,9 @@ private:
     Matrix _matProjection = {};
 
     Frustum _frustum;
+    // 특정 UI만 보여주고 싶으면 사용
+    // 1인 경우 컬링 대상.
+    uint32 _cullingMask = 0; // 32bit로 컬링 여부 표현
 
 public:
     // TEMP

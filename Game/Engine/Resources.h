@@ -11,6 +11,8 @@ class Resources
     DECLARE_SINGLE(Resources);
 
 public:
+    void Init();
+
     // template는 헤더 파일에 전부 만드는 경우가 많다.
     // 그러다보니 ini 파일로 따로 빼는 경우도 많다.
     template<typename T>
@@ -25,8 +27,12 @@ public:
     template<typename T>
     OBJECT_TYPE GetObjectType();
 
+    shared_ptr<Mesh> LoadRectangleMesh();
     shared_ptr<Mesh> LoadCubeMesh();
     shared_ptr<Mesh> LoadSphereMesh();
+
+private:
+    void CreateDefaultShader();
 
 private:
     // Resources 자체는 배열이지만 각 타입에 따른 Map으로 이루어진 배열 생성.

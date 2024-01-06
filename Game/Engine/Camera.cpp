@@ -33,14 +33,15 @@ void Camera::FinalUpdate()
         // 직교 투영: 원근법을 적용시키지 않고 물체의 크기대로 보여짐
         _matProjection = ::XMMatrixOrthographicLH(width * _scale, height * _scale, _near, _far);
 
-    S_MatView = _matView;
-    S_MatProjection = _matProjection;
-
     _frustum.FinalUpdate();
 }
 
 void Camera::Render()
 {
+    // 카메라가 여러 대 생길 것이므로 Update 시가 아니라 Render 시 자신의 Matrix로 교체.
+    S_MatView = _matView;
+    S_MatProjection = _matProjection;
+
     shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
 
     // TODO : Layer 구분
@@ -49,6 +50,9 @@ void Camera::Render()
     for (auto& gameObject : gameObjects)
     {
         if (gameObject->GetMeshRenderer() == nullptr)
+            continue;
+
+        if (IsCulled(gameObject->GetLayerIndex()))
             continue;
 
         if (gameObject->GetCheckFrustum())

@@ -1,5 +1,5 @@
-#ifndef _PARAMS_HLSLI_
-#define _PARAMS_HLSLI_ // pragma once와 동일한 기능
+#ifndef _PARAMS_FX_
+#define _PARAMS_FX_ // pragma once와 동일한 기능
 
 struct LightColor
 {
