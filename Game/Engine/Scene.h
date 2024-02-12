@@ -13,6 +13,8 @@ public:
 	void FinalUpdate();
 
 	void Render();
+	void RenderLights();
+	void RenderFinal();
 private:
 	void PushLightData();
 
@@ -23,7 +25,10 @@ public:
 	const vector<shared_ptr<GameObject>>& GetGameObjects() { return _gameObjects; }
 
 private:
-	vector<shared_ptr<GameObject>> _gameObjects;
+	vector<shared_ptr<GameObject>>		_gameObjects;
+	vector<shared_ptr<class Camera>>	_cameras;
+	vector<shared_ptr<class Light>>		_lights;
+
 	// [ 0 ] WALL
 	// [ 1 ] MONSTER
 	// vector의 vector와 같은 경우로 구분해서 object를 생성하여 탐색에 용이하도록 생성.

@@ -39,6 +39,7 @@ public:
 
 private:
     void CreateDefaultShader();
+    void CreateDefaultMaterial();
 
 private:
     // Resources 자체는 배열이지만 각 타입에 따른 Map으로 이루어진 배열 생성.
