@@ -34,7 +34,7 @@ void Transform::FinalUpdate()
     }
 }
 
-void Transform::PushData()
+void Transform::PushGraphicsData()
 {
     TransformParams transformParams = {};
     transformParams.matWorld = _matWorld;
@@ -43,5 +43,5 @@ void Transform::PushData()
     transformParams.matWV = _matWorld * Camera::S_MatView;
     transformParams.matWVP = _matWorld * Camera::S_MatView * Camera::S_MatProjection;
 
-    CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushData(&transformParams, sizeof(transformParams));
+    CONST_BUFFER(CONSTANT_BUFFER_TYPE::TRANSFORM)->PushGraphicsData(&transformParams, sizeof(transformParams));
 }

@@ -21,10 +21,10 @@ void Light::Render()
 {
 	assert(_lightIndex >= 0);
 
-	GetTransform()->PushData();
+	GetTransform()->PushGraphicsData();
 
 	_lightMaterial->SetInt(0, _lightIndex);
-	_lightMaterial->PushData();
+	_lightMaterial->PushGraphicsData();
 
 	switch (static_cast<LIGHT_TYPE>(_lightInfo.lightType))
 	{

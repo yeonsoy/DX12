@@ -20,11 +20,13 @@ void Engine::Init(const WindowInfo& info)
 
     // 전방 선언 후 헤더를 추가하지 않으면 오류 발생. 내부 함수 구조를 알려주지 않았기 때문.
     _device->Init();
-    _cmdQueue->Init(_device->GetDevice(), _swapChain);
-    _swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
+    _graphicsCmdQueue->Init(_device->GetDevice(), _swapChain);
+    _computeCmdQueue->Init(_device->GetDevice());
+    _swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _graphicsCmdQueue->GetCmdQueue());
     _rootSignature->Init();
     // drawCall이 너무 늘어나는 경우는 비효율적이므로 주의하는 것이 좋다.
-    _tableDescHeap->Init(256);
+    _graphicsDescHeap->Init(256);
+    _computeDescHeap->Init();
 
     CreateConstantBuffer(CBV_REGISTER::b0, sizeof(LightParams), 1);
     CreateConstantBuffer(CBV_REGISTER::b1, sizeof(TransformParams), 256); // Transform 정보를 넘겨주는 경우가 많다.
@@ -53,7 +55,7 @@ void Engine::Update()
 
 void Engine::RenderBegin()
 {
-    _cmdQueue->RenderBegin(&_viewport, &_scissorRect);
+    _graphicsCmdQueue->RenderBegin(&_viewport, &_scissorRect);
 }
 
 void Engine::Render()
@@ -67,7 +69,7 @@ void Engine::Render()
 
 void Engine::RenderEnd()
 {
-    _cmdQueue->RenderEnd();
+    _graphicsCmdQueue->RenderEnd();
 }
 
 void Engine::ResizeWindow(int32 width, int32 height)

@@ -82,24 +82,24 @@ void Mesh::Render()
 {
     // CommandQueue의 RenderBegin과 RenderEnd 사이에서 호출된다.
     // Input Assmbler에 Vertex Buffer를 넘겨주는 작업
-    CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
-    CMD_LIST->IASetIndexBuffer(&_indexBufferView);
+    GRAPHICS_CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
+    GRAPHICS_CMD_LIST->IASetIndexBuffer(&_indexBufferView);
 
     // 1) Buffer에다가 데이터 세팅
     // < Constant를 직접 전달 시 >
     // 2) Buffer의 주소를 register에다가 전송
-    // GEngine->GetCB()->PushData(0, &_transform, sizeof(_transform));
-    // GEngine->GetCB()->PushData(1, &_transform, sizeof(_transform));
+    // GEngine->GetCB()->PushGraphicsData(0, &_transform, sizeof(_transform));
+    // GEngine->GetCB()->PushGraphicsData(1, &_transform, sizeof(_transform));
 
     // < Table로 전달 시 >
     // 2) TableDescHeap에다가 CBV 전달
     // 3) 모두 세팅이 끝났으면 TableDescHeap 커밋
-    GEngine->GetTableDescHeap()->CommitTable();
+    GEngine->GetGraphicsDescHeap()->CommitTable();
 
     // Vetex를 이용해서 그려주는 버전
-    // CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
+    // GRAPHICS_CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 
     // Index를 이용해서 그려주는 버전
-    CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
+    GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
 }
