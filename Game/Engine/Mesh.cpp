@@ -78,11 +78,10 @@ void Mesh::CreateIndexBuffer(const vector<uint32>& buffer)
     _indexBufferView.SizeInBytes = bufferSize;
 }
 
-void Mesh::Render()
+void Mesh::Render(uint32 instanceCount)
 {
     // CommandQueue의 RenderBegin과 RenderEnd 사이에서 호출된다.
     // Input Assmbler에 Vertex Buffer를 넘겨주는 작업
-    GRAPHICS_CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
     GRAPHICS_CMD_LIST->IASetIndexBuffer(&_indexBufferView);
 
@@ -98,8 +97,8 @@ void Mesh::Render()
     GEngine->GetGraphicsDescHeap()->CommitTable();
 
     // Vetex를 이용해서 그려주는 버전
-    // GRAPHICS_CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
+    // GRAPHICS_CMD_LIST->DrawInstanced(_vertexCount, instanceCount, 0, 0);
 
     // Index를 이용해서 그려주는 버전
-    GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
+    GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, instanceCount, 0, 0, 0);
 }
