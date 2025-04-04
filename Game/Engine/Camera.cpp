@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "ParticleSystem.h"
+#include "InstancingManager.h"
 
 Matrix Camera::S_MatView;
 Matrix Camera::S_MatProjection;
@@ -74,74 +75,68 @@ void Camera::Render()
 
 void Camera::SortGameObject()
 {
-	shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
-	const vector<shared_ptr<GameObject>>& gameObjects = scene->GetGameObjects();
+    shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
+    const vector<shared_ptr<GameObject>>& gameObjects = scene->GetGameObjects();
 
-	_vecForward.clear();
-	_vecDeferred.clear();
-	_vecParticle.clear();
+    _vecForward.clear();
+    _vecDeferred.clear();
+    _vecParticle.clear();
 
-	for (auto& gameObject : gameObjects)
-	{
-		if (gameObject->GetMeshRenderer() == nullptr && gameObject->GetParticleSystem() == nullptr)
-			continue;
+    for (auto& gameObject : gameObjects)
+    {
+        if (gameObject->GetMeshRenderer() == nullptr && gameObject->GetParticleSystem() == nullptr)
+            continue;
 
-		if (IsCulled(gameObject->GetLayerIndex()))
-			continue;
+        if (IsCulled(gameObject->GetLayerIndex()))
+            continue;
 
-		if (gameObject->GetCheckFrustum())
-		{
-			if (_frustum.ContainsSphere(
-				gameObject->GetTransform()->GetWorldPosition(),
-				gameObject->GetTransform()->GetBoundingSphereRadius()) == false)
-			{
-				continue;
-			}
-		}
+        if (gameObject->GetCheckFrustum())
+        {
+            if (_frustum.ContainsSphere(
+                gameObject->GetTransform()->GetWorldPosition(),
+                gameObject->GetTransform()->GetBoundingSphereRadius()) == false)
+            {
+                continue;
+            }
+        }
 
-		if (gameObject->GetMeshRenderer())
-		{
-			SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
-			switch (shaderType)
-			{
-			case SHADER_TYPE::DEFERRED:
-				_vecDeferred.push_back(gameObject);
-				break;
-			case SHADER_TYPE::FORWARD:
-				_vecForward.push_back(gameObject);
-				break;
-			}
-		}
-		else
-		{
-			_vecParticle.push_back(gameObject);
-		}
-	}
+        if (gameObject->GetMeshRenderer())
+        {
+            SHADER_TYPE shaderType = gameObject->GetMeshRenderer()->GetMaterial()->GetShader()->GetShaderType();
+            switch (shaderType)
+            {
+            case SHADER_TYPE::DEFERRED:
+                _vecDeferred.push_back(gameObject);
+                break;
+            case SHADER_TYPE::FORWARD:
+                _vecForward.push_back(gameObject);
+                break;
+            }
+        }
+        else
+        {
+            _vecParticle.push_back(gameObject);
+        }
+    }
 }
 
 void Camera::Render_Deferred()
 {
-	S_MatView = _matView;
-	S_MatProjection = _matProjection;
+    S_MatView = _matView;
+    S_MatProjection = _matProjection;
 
-	for (auto& gameObject : _vecDeferred)
-	{
-		gameObject->GetMeshRenderer()->Render();
-	}
+    GET_SINGLE(InstancingManager)->Render(_vecDeferred);
 }
 
 void Camera::Render_Forward()
 {
-	S_MatView = _matView;
-	S_MatProjection = _matProjection;
+    S_MatView = _matView;
+    S_MatProjection = _matProjection;
 
-	for (auto& gameObject : _vecForward)
-	{
-		gameObject->GetMeshRenderer()->Render();
-	}
+    GET_SINGLE(InstancingManager)->Render(_vecForward);
 
-	for (auto& gameObject : _vecParticle)
-	{
-		gameObject->GetParticleSystem()->Render();
-	}
+    for (auto& gameObject : _vecParticle)
+    {
+        gameObject->GetParticleSystem()->Render();
+    }
 }
