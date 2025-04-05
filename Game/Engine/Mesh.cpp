@@ -89,8 +89,8 @@ void Mesh::Render(uint32 instanceCount)
     // 1) Buffer에다가 데이터 세팅
     // < Constant를 직접 전달 시 >
     // 2) Buffer의 주소를 register에다가 전송
-    // GEngine->GetCB()->PushGraphicsData(0, &_transform, sizeof(_transform));
-    // GEngine->GetCB()->PushGraphicsData(1, &_transform, sizeof(_transform));
+    // GEngine->GetCB()->PushData(0, &_transform, sizeof(_transform));
+    // GEngine->GetCB()->PushData(1, &_transform, sizeof(_transform));
 
     // < Table로 전달 시 >
     // 2) TableDescHeap에다가 CBV 전달

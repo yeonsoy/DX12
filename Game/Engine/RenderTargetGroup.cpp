@@ -36,7 +36,7 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 		DEVICE->CopyDescriptors(1, &destHandle, &destSize, 1, &srcHandle, &srcSize, D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
 
-	for (int i = 0; i < _rtCount; ++i)
+	for (uint32 i = 0; i < _rtCount; ++i)
 	{
 		_targetToResource[i] = CD3DX12_RESOURCE_BARRIER::Transition(_rtVec[i].target->GetTex2D().Get(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
@@ -51,6 +51,12 @@ void RenderTargetGroup::Create(RENDER_TARGET_GROUP_TYPE groupType, vector<Render
 // RenderTarget을 여러 개 관리하면서 OMSetRenderTargets 함수를 호출하여 같은 동작 실행.
 void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 {
+	D3D12_VIEWPORT vp = D3D12_VIEWPORT{ 0.f, 0.f, _rtVec[0].target->GetWidth() , _rtVec[0].target->GetHeight(), 0.f, 1.f };
+	D3D12_RECT rect = D3D12_RECT{ 0, 0, static_cast<LONG>(_rtVec[0].target->GetWidth()),  static_cast<LONG>(_rtVec[0].target->GetHeight()) };
+
+	GRAPHICS_CMD_LIST->RSSetViewports(1, &vp);
+	GRAPHICS_CMD_LIST->RSSetScissorRects(1, &rect);
+
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(_rtvHeapBegin, offset * _rtvHeapSize);
 	// 기존에 사용하고 있던 CommandQueue 코드와 동일 (1개만 사용)
 	GRAPHICS_CMD_LIST->OMSetRenderTargets(count, &rtvHandle, FALSE/*1개*/, &_dsvHeapBegin);
@@ -58,6 +64,12 @@ void RenderTargetGroup::OMSetRenderTargets(uint32 count, uint32 offset)
 
 void RenderTargetGroup::OMSetRenderTargets()
 {
+	D3D12_VIEWPORT vp = D3D12_VIEWPORT{ 0.f, 0.f, _rtVec[0].target->GetWidth() , _rtVec[0].target->GetHeight(), 0.f, 1.f };
+	D3D12_RECT rect = D3D12_RECT{ 0, 0, static_cast<LONG>(_rtVec[0].target->GetWidth()),  static_cast<LONG>(_rtVec[0].target->GetHeight()) };
+
+	GRAPHICS_CMD_LIST->RSSetViewports(1, &vp);
+	GRAPHICS_CMD_LIST->RSSetScissorRects(1, &rect);
+
 	GRAPHICS_CMD_LIST->OMSetRenderTargets(_rtCount, &_rtvHeapBegin, TRUE/*다중*/, &_dsvHeapBegin);
 }
 

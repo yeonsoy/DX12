@@ -29,6 +29,8 @@ public:
 
     void Render();
     void Render(shared_ptr<class InstancingBuffer>& buffer);
+    // Shadow의 경우 일단 Instancing을 고려하지 않고 생성
+    void RenderShadow();
 
     uint64 GetInstanceID();
 

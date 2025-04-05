@@ -15,7 +15,7 @@ public:
     void WaitSync();
 
     // 실질적으로 게임이 그려지는 부분과 관련
-    void RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect);
+    void RenderBegin();
     void RenderEnd();
 
     void FlushResourceCommandQueue();

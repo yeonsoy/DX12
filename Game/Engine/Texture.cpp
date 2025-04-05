@@ -45,13 +45,13 @@ void Texture::Load(const wstring& path)
 
     // UPLOAD Buffer를 만든다. (Constant Buffer에서도 활용한 부분)
     D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-    D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+    _desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 
     ComPtr<ID3D12Resource> textureUploadHeap;
     hr = DEVICE->CreateCommittedResource(
         &heapProperty,
         D3D12_HEAP_FLAG_NONE,
-        &desc,
+        &_desc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
         IID_PPV_ARGS(textureUploadHeap.GetAddressOf()));
@@ -130,13 +130,13 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 {
 	_tex2D = tex2D;
 
-	D3D12_RESOURCE_DESC desc = tex2D->GetDesc();
+	_desc = tex2D->GetDesc();
 
 	// 주요 조합
 	// - DSV 단독 (조합X, Depth Stencil)
 	// - SRV (일반적인 Texture)
 	// - RTV + SRV (별도의 Texture로 다른 Shader에 건넬 수도 있기 때문에 조합으로 활용)
-	if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
+	if (_desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)
 	{
 		// DSV
 		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
@@ -151,7 +151,7 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 	}
 	else
 	{
-		if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
+		if (_desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
 		{
 			// RTV
 			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
@@ -165,7 +165,7 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 			DEVICE->CreateRenderTargetView(_tex2D.Get(), nullptr, rtvHeapBegin);
 		}
 
-		if (desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)
+		if (_desc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)
 		{
 			// UAV
 			D3D12_DESCRIPTOR_HEAP_DESC uavHeapDesc = {};

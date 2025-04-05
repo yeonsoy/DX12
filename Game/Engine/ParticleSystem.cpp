@@ -57,7 +57,7 @@ void ParticleSystem::FinalUpdate()
 
 void ParticleSystem::Render()
 {
-	GetTransform()->PushGraphicsData();
+	GetTransform()->PushData();
 
 	_particleBuffer->PushGraphicsData(SRV_REGISTER::t9);
 	_material->SetFloat(0, _startScale);

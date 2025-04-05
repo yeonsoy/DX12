@@ -10,7 +10,8 @@ enum
     MATERIAL_FLOAT_COUNT = 4,
     MATERIAL_TEXTURE_COUNT = 4,
     MATERIAL_VECTOR2_COUNT = 4,
-    MATERIAL_VECTOR4_COUNT = 4
+    MATERIAL_VECTOR4_COUNT = 4,
+    MATERIAL_MATRIX_COUNT = 4
 };
 
 struct MaterialParams
@@ -20,6 +21,7 @@ struct MaterialParams
     void SetTexOn(uint8 index, int32 value) { texOnParams[index] = value; }
     void SetVec2(uint8 index, Vec2 value) { vec2Params[index] = value; }
     void SetVec4(uint8 index, Vec4 value) { vec4Params[index] = value; }
+    void SetMatrix(uint8 index, Matrix& value) { matrixParams[index] = value; }
 
     // vector와 유사하지만 개수를 추가할 수 없는 배열
     array<int32, MATERIAL_INT_COUNT> intParams;
@@ -27,6 +29,7 @@ struct MaterialParams
     array<int32, MATERIAL_TEXTURE_COUNT> texOnParams;
     array<Vec2, MATERIAL_VECTOR2_COUNT> vec2Params;
     array<Vec4, MATERIAL_VECTOR4_COUNT> vec4Params;
+    array<Matrix, MATERIAL_MATRIX_COUNT> matrixParams;
 };
 
 class Material: public Object
@@ -48,6 +51,7 @@ public:
 
     void SetVec2(uint8 index, Vec2 value) { _params.SetVec2(index, value); }
     void SetVec4(uint8 index, Vec4 value) { _params.SetVec4(index, value); }
+    void SetMatrix(uint8 index, Matrix& value) { _params.SetMatrix(index, value); }
 
     void PushGraphicsData();
     void PushComputeData();

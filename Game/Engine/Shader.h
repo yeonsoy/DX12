@@ -7,7 +7,8 @@ enum class SHADER_TYPE : uint8
     FORWARD,
     LIGHTING,
     PARTICLE,
-    COMPUTE
+    COMPUTE,
+    SHADOW
 };
 
 enum class RASTERIZER_TYPE : uint8

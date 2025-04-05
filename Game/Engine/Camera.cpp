@@ -16,6 +16,8 @@ Matrix Camera::S_MatProjection;
 
 Camera::Camera() : Component(COMPONENT_TYPE::CAMERA)
 {
+    _width = static_cast<float>(GEngine->GetWindow().width);
+    _height = static_cast<float>(GEngine->GetWindow().height);
 }
 
 Camera::~Camera()
@@ -27,15 +29,12 @@ void Camera::FinalUpdate()
     // 실질적으로 행렬을 계산해주는 부분
     _matView = GetTransform()->GetLocalToWorldMatrix().Invert(); // World 행렬에 역행렬을 구하게 되면 View 행렬.
 
-    float width = static_cast<float>(GEngine->GetWindow().width);
-    float height = static_cast<float>(GEngine->GetWindow().height);
-
     if (_type == PROJECTION_TYPE::PERSPECTIVE)
         // Left-Handed 좌표계 사용을 위해 DX 함수 사용
-        _matProjection = ::XMMatrixPerspectiveFovLH(_fov, width / height, _near, _far);
+        _matProjection = ::XMMatrixPerspectiveFovLH(_fov, _width / _height, _near, _far);
     else
         // 직교 투영: 원근법을 적용시키지 않고 물체의 크기대로 보여짐
-        _matProjection = ::XMMatrixOrthographicLH(width * _scale, height * _scale, _near, _far);
+        _matProjection = ::XMMatrixOrthographicLH(_width * _scale, _height * _scale, _near, _far);
 
     _frustum.FinalUpdate();
 }
@@ -120,6 +119,39 @@ void Camera::SortGameObject()
     }
 }
 
+void Camera::SortShadowObject()
+{
+    shared_ptr<Scene> scene = GET_SINGLE(SceneManager)->GetActiveScene();
+    const vector<shared_ptr<GameObject>>& gameObjects = scene->GetGameObjects();
+
+    _vecShadow.clear();
+
+    for (auto& gameObject : gameObjects)
+    {
+        if (gameObject->GetMeshRenderer() == nullptr)
+            continue;
+
+        // 그림자를 그리지 않는 Static한 물체
+        if (gameObject->IsStatic())
+            continue;
+
+        if (IsCulled(gameObject->GetLayerIndex()))
+            continue;
+
+        if (gameObject->GetCheckFrustum())
+        {
+            if (_frustum.ContainsSphere(
+                gameObject->GetTransform()->GetWorldPosition(),
+                gameObject->GetTransform()->GetBoundingSphereRadius()) == false)
+            {
+                continue;
+            }
+        }
+
+        _vecShadow.push_back(gameObject);
+    }
+}
+
 void Camera::Render_Deferred()
 {
     S_MatView = _matView;
@@ -138,5 +170,16 @@ void Camera::Render_Forward()
     for (auto& gameObject : _vecParticle)
     {
         gameObject->GetParticleSystem()->Render();
+    }
+}
+
+void Camera::Render_Shadow()
+{
+    S_MatView = _matView;
+    S_MatProjection = _matProjection;
+
+    for (auto& gameObject : _vecShadow)
+    {
+        gameObject->GetMeshRenderer()->RenderShadow();
     }
 }

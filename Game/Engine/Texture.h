@@ -19,6 +19,9 @@ public:
     // Resource로 부터 Texture를 생성 (EX. SwapChain)
     void CreateFromResource(ComPtr<ID3D12Resource> tex2D);
 
+    float GetWidth() { return static_cast<float>(_desc.Width); }
+    float GetHeight() { return static_cast<float>(_desc.Height); }
+
 public:
     ComPtr<ID3D12Resource> GetTex2D() { return _tex2D; }
     ComPtr<ID3D12DescriptorHeap> GetSRV() { return _srvHeap; }
@@ -31,6 +34,7 @@ public:
 
 private:
     ScratchImage                    _image;
+    D3D12_RESOURCE_DESC				_desc;
     ComPtr<ID3D12Resource>          _tex2D;
 
     ComPtr<ID3D12DescriptorHeap>    _srvHeap; // Constant Buffer와 유사
