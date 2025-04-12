@@ -131,7 +131,7 @@ void Texture::CreateFromResource(ComPtr<ID3D12Resource> tex2D)
 	_tex2D = tex2D;
 
 	_desc = tex2D->GetDesc();
-
+		
 	// 주요 조합
 	// - DSV 단독 (조합X, Depth Stencil)
 	// - SRV (일반적인 Texture)

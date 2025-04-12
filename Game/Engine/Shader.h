@@ -49,6 +49,20 @@ struct ShaderInfo
     D3D_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 };
 
+struct ShaderArg
+{
+    const string vs = "VS_Main";
+    const string hs;
+    const string ds;
+    const string gs;
+    const string ps = "PS_Main";
+
+    ShaderArg() : vs("VS_Main"), ps("PS_Main") {};
+    ShaderArg(const string vs, const string ps) : vs(vs), ps(ps) {};
+    ShaderArg(const string vs, const string hs, const string ds, const string gs, const string ps) : vs(vs), hs(hs), ds(ds), gs(gs), ps(ps) {};
+
+};
+
 // [일감 기술서] 외주 인력들이 뭘 해야할지 기술
 
 class Shader : public Object
@@ -57,7 +71,7 @@ public:
     Shader();
     virtual ~Shader();
 
-    void CreateGraphicsShader(const wstring& path, ShaderInfo info = ShaderInfo(), const string& vs = "VS_Main", const string& ps = "PS_Main", const string& gs = "");
+    void CreateGraphicsShader(const wstring& path, ShaderInfo info = ShaderInfo(), ShaderArg arg = ShaderArg());
     void CreateComputeShader(const wstring& path, const string& name, const string& version);
     void Update();
 
@@ -68,8 +82,10 @@ public:
 private:
     void CreateShader(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shaderByteCode);
     void CreateVertexShader(const wstring& path, const string& name, const string& version);
-    void CreatePixelShader(const wstring& path, const string& name, const string& version);
+    void CreateHullShader(const wstring& path, const string& name, const string& version);
+    void CreateDomainShader(const wstring& path, const string& name, const string& version);
     void CreateGeometryShader(const wstring& path, const string& name, const string& version);
+    void CreatePixelShader(const wstring& path, const string& name, const string& version);
 
 private:
     ShaderInfo _info;
@@ -77,8 +93,10 @@ private:
 
     // Graphics Shader
     ComPtr<ID3DBlob>					_vsBlob;
-    ComPtr<ID3DBlob>					_psBlob;
+    ComPtr<ID3DBlob>					_hsBlob;
+    ComPtr<ID3DBlob>					_dsBlob;
     ComPtr<ID3DBlob>					_gsBlob;
+    ComPtr<ID3DBlob>					_psBlob;
     ComPtr<ID3DBlob>					_errBlob;
     D3D12_GRAPHICS_PIPELINE_STATE_DESC  _graphicsPipelineDesc = {};
 
