@@ -6,16 +6,21 @@ class Texture;
 
 enum
 {
-    MATERIAL_INT_COUNT = 4,
-    MATERIAL_FLOAT_COUNT = 4,
-    MATERIAL_TEXTURE_COUNT = 4,
-    MATERIAL_VECTOR2_COUNT = 4,
-    MATERIAL_VECTOR4_COUNT = 4,
-    MATERIAL_MATRIX_COUNT = 4
+    MATERIAL_ARG_COUNT = 4,
 };
 
 struct MaterialParams
 {
+    MaterialParams()
+    {
+        for (int32 i = 0; i < MATERIAL_ARG_COUNT; i++)
+        {
+            SetInt(i, 0);
+            SetFloat(i, 0.f);
+            SetTexOn(i, 0);
+        }
+    }
+
     void SetInt(uint8 index, int32 value) { intParams[index] = value; }
     void SetFloat(uint8 index, float value) { floatParams[index] = value; }
     void SetTexOn(uint8 index, int32 value) { texOnParams[index] = value; }
@@ -24,12 +29,12 @@ struct MaterialParams
     void SetMatrix(uint8 index, Matrix& value) { matrixParams[index] = value; }
 
     // vector와 유사하지만 개수를 추가할 수 없는 배열
-    array<int32, MATERIAL_INT_COUNT> intParams;
-    array<float, MATERIAL_FLOAT_COUNT> floatParams;
-    array<int32, MATERIAL_TEXTURE_COUNT> texOnParams;
-    array<Vec2, MATERIAL_VECTOR2_COUNT> vec2Params;
-    array<Vec4, MATERIAL_VECTOR4_COUNT> vec4Params;
-    array<Matrix, MATERIAL_MATRIX_COUNT> matrixParams;
+    array<int32, MATERIAL_ARG_COUNT> intParams;
+    array<float, MATERIAL_ARG_COUNT> floatParams;
+    array<int32, MATERIAL_ARG_COUNT> texOnParams;
+    array<Vec2, MATERIAL_ARG_COUNT> vec2Params;
+    array<Vec4, MATERIAL_ARG_COUNT> vec4Params;
+    array<Matrix, MATERIAL_ARG_COUNT> matrixParams;
 };
 
 class Material: public Object
@@ -65,5 +70,5 @@ private:
     MaterialParams      _params;
 
     // Texture 저장
-    array<shared_ptr<Texture>, MATERIAL_TEXTURE_COUNT> _textures;
+    array<shared_ptr<Texture>, MATERIAL_ARG_COUNT> _textures;
 };

@@ -8,6 +8,7 @@ enum class COMPONENT_TYPE : uint8
     CAMERA,
     LIGHT,
     PARTICLE_SYSTEM,
+    TERRAIN,
     // ...
     MONO_BEHAVIOUR, // 반드시 마지막이어야 한다.
     END,
