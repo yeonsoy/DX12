@@ -24,8 +24,8 @@ void FBXLoader::LoadFbx(const wstring& path)
 	Import(path);
 
 	// Animation	
-	//LoadBones(_scene->GetRootNode());
-	//LoadAnimationInfo();
+	LoadBones(_scene->GetRootNode());
+	LoadAnimationInfo();
 
 	// 로드된 데이터 파싱 (Mesh/Material/Skin)
 	ParseNode(_scene->GetRootNode());
@@ -362,6 +362,7 @@ void FBXLoader::CreateMaterials()
 
 void FBXLoader::LoadBones(FbxNode* node, int32 idx, int32 parentIdx)
 {
+	// 트리 구조의 노드를 재귀적으로 탐색하면서 뼈대에 대한 정보를 스캔
 	FbxNodeAttribute* attribute = node->GetNodeAttribute();
 
 	if (attribute && attribute->GetAttributeType() == FbxNodeAttribute::eSkeleton)
@@ -428,6 +429,7 @@ void FBXLoader::LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 					int32 boneIdx = FindBoneIndex(cluster->GetLink()->GetName());
 					assert(boneIdx >= 0);
 
+					// 관절에 따른 영향을 얼마나 받는지 추출해서 저장
 					FbxAMatrix matNodeTransform = GetTransform(mesh->GetNode());
 					LoadBoneWeight(cluster, boneIdx, meshInfo);
 					LoadOffsetMatrix(cluster, matNodeTransform, boneIdx, meshInfo);
@@ -480,6 +482,7 @@ void FBXLoader::LoadBoneWeight(FbxCluster* cluster, int32 boneIdx, FbxMeshInfo* 
 
 void FBXLoader::LoadOffsetMatrix(FbxCluster* cluster, const FbxAMatrix& matNodeTransform, int32 boneIdx, FbxMeshInfo* meshInfo)
 {
+	// Y축과 Z축이 다르게 설정되어있어서 변환
 	FbxAMatrix matClusterTrans;
 	FbxAMatrix matClusterLinkTrans;
 	// The transformation of the mesh at binding time 
@@ -529,6 +532,7 @@ void FBXLoader::LoadKeyframe(int32 animIndex, FbxNode* node, FbxCluster* cluster
 	FbxLongLong startFrame = _animClips[animIndex]->startTime.GetFrameCount(timeMode);
 	FbxLongLong endFrame = _animClips[animIndex]->endTime.GetFrameCount(timeMode);
 
+	// 각 프레임마다 해당되는 키 프레임들을 가져온다.
 	for (FbxLongLong frame = startFrame; frame < endFrame; frame++)
 	{
 		FbxKeyFrameInfo keyFrameInfo = {};
@@ -536,6 +540,7 @@ void FBXLoader::LoadKeyframe(int32 animIndex, FbxNode* node, FbxCluster* cluster
 
 		fbxTime.SetFrame(frame, timeMode);
 
+		// ToRoot를 구하기 (단계 별로 곱해준다. 간단하게 구현되어 성능이 좋지는 않다)
 		FbxAMatrix matFromNode = node->EvaluateGlobalTransform(fbxTime);
 		FbxAMatrix matTransform = matFromNode.Inverse() * cluster->GetLink()->EvaluateGlobalTransform(fbxTime);
 		matTransform = matReflect * matTransform * matReflect;

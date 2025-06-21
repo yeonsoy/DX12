@@ -10,6 +10,7 @@ class MonoBehaviour;
 class ParticleSystem;
 class Terrain;
 class BaseCollider;
+class Animator;
 
 // Component를 관리하는 조립체
 class GameObject : public Object, public enable_shared_from_this<GameObject>
@@ -33,6 +34,7 @@ public:
     shared_ptr<ParticleSystem> GetParticleSystem();
     shared_ptr<Terrain> GetTerrain();
     shared_ptr<BaseCollider> GetCollider();
+    shared_ptr<Animator> GetAnimator();
 
     void AddComponent(shared_ptr<Component> component);
 

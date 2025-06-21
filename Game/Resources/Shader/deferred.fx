@@ -2,6 +2,7 @@
 #define _DEFERRED_FX_
 
 #include "params.fx"
+#include "utils.fx"
 
 struct VS_IN
 {
@@ -9,6 +10,8 @@ struct VS_IN
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
+    float4 weight : WEIGHT;
+    float4 indices : INDICES;
     
     row_major matrix matWorld : W;
     row_major matrix matWV : WV;
@@ -33,6 +36,9 @@ VS_OUT VS_Main(VS_IN input)
 
     if (g_int_0 == 1) // Instancing
     {
+        if (g_int_1 == 1)
+            Skinning(input.pos, input.normal, input.tangent, input.weight, input.indices);
+        
         output.pos = mul(float4(input.pos, 1.f), input.matWVP);
         output.uv = input.uv;
 
@@ -43,6 +49,9 @@ VS_OUT VS_Main(VS_IN input)
     }
     else
     {
+        if (g_int_1 == 1)
+            Skinning(input.pos, input.normal, input.tangent, input.weight, input.indices);
+        
         // 어떤 정점이건 WVP 행렬 적용.
         // float4에 1.f를 넣어주는 것은 좌표의 개념을 만들기 위해서이고,
         // 방향성만 추출하고 싶다면 0.f로 확장한다.
